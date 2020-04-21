@@ -25,6 +25,43 @@ function init(){
             metaDiv.select('p').append('h6').text(entry[0]+': '+entry[1]);
         });
 
+        // Gauge plot, main just using documentation code
+        // Could add a lot more like pointer, text on increment etc
+        var data = [
+            {
+              type: "indicator",
+              mode: "gauge+number",
+              value: subjectData.wfreq,
+              title: { text: "Belly Button Wash Frequency", font: { size: 36 } },
+              gauge: {
+                axis: { range: [null, 9], tickwidth: 1, tickcolor: "green" },
+                bar: { color: "#6495ED" },
+                bgcolor: "white",
+                borderwidth: 2,
+                bordercolor: "gray",
+                steps: [
+                  { range: [0, 1], color: '#FFFFFF' },
+                  { range: [1, 2], color: "#EEEEFF" },
+                  { range: [2, 3], color: "#DDDDFF" },
+                  { range: [3, 4], color: "#CCCCFF" },
+                  { range: [4, 5], color: "#AAAAFF" },
+                  { range: [5, 6], color: "#8888FF" },
+                  { range: [6, 7], color: "#6666FF" },
+                  { range: [7, 8], color: "#4444FF" },
+                  { range: [8, 9], color: "#1111FF" },
+                ],
+              }
+            }
+          ];
+          var layout = {
+            width: 500,
+            height: 400,
+            margin: { t: 25, r: 25, l: 25, b: 25 },
+            paper_bgcolor: "Gainsboro",
+            font: { color: "Indigo", family: "Arial" }
+          };
+          Plotly.newPlot('gauge', data, layout);
+
         // Init bar graph
         // From quick inspection sample values seems sorted, gonna assume it is
         // Grab first data point for default 
@@ -110,20 +147,13 @@ function buildBubble(subjectData){
     };
     //  if chart exist restyle else plot new chart
     if (d3.select('#bubble').text()){
-        console.log('restyle bubble');
         Plotly.restyle('bubble','x',[bubbleX]);
         Plotly.restyle('bubble','y',[bubbleY]);
         Plotly.restyle('bubble','text',[bubbleText]);
-        // newMarker = {marker: {
-        //     color: bubbleColor,
-        //     size: bubbleY
-        //   }};
-        // Plotly.restyle('bubble','marker',[newMarker]);
         Plotly.restyle('bubble',{"marker.color":[bubbleColor]});
         Plotly.restyle('bubble',{"marker.size":[bubbleY]});
         Plotly.relayout('bubble','title','ID ' + subjectData.id + ' Bubble Chart');
     }else{
-         console.log('init bubble');
         Plotly.newPlot('bubble',data,layout);
     }
 }
@@ -154,10 +184,13 @@ function switchSubject() {
             metaDiv.select('p').append('h6').text(entry[0]+': '+entry[1]);
 
         // Bar change
-        // d3.select('#bar')
         buildBar(sampleData[subjectNum]);
+        // Bubble Change
         buildBubble(sampleData[subjectNum]);
 
+        // Update wash frequency
+        Plotly.restyle('gauge','value',[subjectData.wfreq]);
+        
 
     });
   });
